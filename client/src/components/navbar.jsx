@@ -15,7 +15,7 @@ const Navbar = () => {
         onClick={() => navigate(user ? '/dashboard' : '/')}
         className="text-xl font-bold"
       >
-        Finance Tracker
+        FinTrack
       </button>
 
       <div className="space-x-4">
