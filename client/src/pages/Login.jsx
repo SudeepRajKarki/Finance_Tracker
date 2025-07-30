@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import API from '../api';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 const Login = () => {
   const [form, setForm] = useState({ email: '', password: '' });
@@ -50,10 +50,10 @@ const Login = () => {
       </button>
       <p className="text-center text-sm">
         No Account?{' '}
-        <a href="/register" className="text-blue-600 hover:underline">
+        <Link to="/register" className="text-blue-600 hover:underline">
           Register Now
-        </a>
-      </p>
+        </Link>
+        </p>
     </form>
   </div>
 </div>

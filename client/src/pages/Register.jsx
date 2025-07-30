@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import API from '../api';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 
 const Register = () => {
   const [form, setForm] = useState({ name: '', email: '', password: '' });
@@ -40,7 +40,7 @@ const Register = () => {
         <button type="submit" className="w-full bg-blue-600 text-white py-2 rounded">
           Register
         </button>
-        <p className='text-center text-sm'>Already Registered User! <a href='/login' className="text-blue-500 hover:underline" >Login Here</a></p>
+        <p className='text-center text-sm'>Already Registered User! <Link to='/login' className="text-blue-500 hover:underline" >Login Here</Link></p>
       </form>
       </div>
       </div>
