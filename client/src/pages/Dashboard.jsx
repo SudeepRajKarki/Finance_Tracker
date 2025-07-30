@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from "react";
 import {
-  BarChart,
-  Bar,
   XAxis,
   YAxis,
   Tooltip,
@@ -14,9 +12,12 @@ import {
   LineChart,
   Line,
 } from "recharts";
-
 import { fetchIncome } from "../services/Incomeservice";
 import { fetchExpense } from '../services/Expenseservice';
+// --- Import React Icons ---
+import { FaShoppingCart, FaPlane, FaUtensils, FaMoneyBillWave, FaEllipsisH } from "react-icons/fa";
+import { GiReceiveMoney } from "react-icons/gi";
+import { MdArrowDropDown, MdArrowDropUp } from "react-icons/md"; // Import Up Arrow Icon
 
 const COLORS = [
   "#0088FE",
@@ -29,10 +30,31 @@ const COLORS = [
   "#8884d8",
 ];
 
+// --- Icon Mapping ---
+const getTransactionIcon = (type, sourceOrCategory) => {
+  if (type === "Income") {
+    return <GiReceiveMoney className="text-green-500 text-xl" />;
+  }
+
+  // Map common expense categories to icons
+  switch (sourceOrCategory?.toLowerCase()) {
+    case "shopping":
+      return <FaShoppingCart className="text-purple-500 text-xl" />;
+    case "travel":
+      return <FaPlane className="text-blue-500 text-xl" />;
+    case "food":
+      return <FaUtensils className="text-red-500 text-xl" />;
+    default:
+      return <FaEllipsisH className="text-gray-500 text-xl" />; // Default icon
+  }
+};
+
 const Dashboard = () => {
   const [income, setIncome] = useState([]);
   const [expenses, setExpenses] = useState([]);
   const [loading, setLoading] = useState(true);
+  // State to control the number of transactions displayed
+  const [showAllTransactions, setShowAllTransactions] = useState(false);
 
   // Fetch income and expenses once on mount
   useEffect(() => {
@@ -79,8 +101,6 @@ const Dashboard = () => {
 
   // Prepare data for line chart: aggregate by date (yyyy-mm-dd)
   const parseDate = (d) => new Date(d).toISOString().split("T")[0];
-
-  // Helper to group by date and sum amounts
   const aggregateByDate = (arr) => {
     const map = {};
     arr.forEach(({ date, amount }) => {
@@ -89,7 +109,6 @@ const Dashboard = () => {
     });
     return map;
   };
-
   const incomeByDate = aggregateByDate(income);
   const expensesByDate = aggregateByDate(expenses);
 
@@ -105,13 +124,17 @@ const Dashboard = () => {
     Expense: expensesByDate[date] || 0,
   }));
 
-  // Recent transactions: merge last 5 income and expenses, sort by date desc
-  const recentTransactions = [
+  // Recent transactions: merge ALL income and expenses, sort by date desc
+  const allRecentTransactions = [
     ...income.map((i) => ({ ...i, type: "Income" })),
     ...expenses.map((e) => ({ ...e, type: "Expense" })),
   ]
-    .sort((a, b) => new Date(b.date) - new Date(a.date))
-    .slice(0, 10);
+    .sort((a, b) => new Date(b.date) - new Date(a.date));
+
+  // Determine which transactions to display based on the toggle state
+  const displayedTransactions = showAllTransactions
+    ? allRecentTransactions
+    : allRecentTransactions.slice(0, 5); // Show top 5 by default
 
   if (loading) return <p className="text-center mt-20">Loading data...</p>;
 
@@ -141,7 +164,69 @@ const Dashboard = () => {
         </div>
       </div>
 
-      {/* Line Chart: Income & Expense over time */}
+      {/* --- Updated Recent Transactions Section with Toggle --- */}
+      <div className="bg-white p-6 rounded-2xl shadow-lg">
+        <div className="flex justify-between items-center mb-6">
+          <h3 className="text-2xl font-bold text-gray-800">Recent Transactions</h3>
+          {/* Toggle Button */}
+          <button
+            onClick={() => setShowAllTransactions(!showAllTransactions)}
+            className="text-sm font-medium text-blue-500 hover:underline flex items-center"
+          >
+            {showAllTransactions ? (
+              <>
+                See Less <MdArrowDropUp className="ml-1 text-lg" />
+              </>
+            ) : (
+              <>
+                See All <MdArrowDropDown className="ml-1 text-lg" />
+              </>
+            )}
+          </button>
+        </div>
+
+        {displayedTransactions.length > 0 ? (
+          <ul className="space-y-4">
+            {displayedTransactions.map((tx) => (
+              <li
+                key={tx._id}
+                className="flex items-center justify-between pb-4 border-b border-gray-100 last:border-0 last:pb-0"
+              >
+                <div className="flex items-center space-x-4">
+                  {/* Icon Container */}
+                  <div className="flex-shrink-0 w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center">
+                    {getTransactionIcon(tx.type, tx.type === "Income" ? tx.source : tx.category)}
+                  </div>
+                  {/* Transaction Details */}
+                  <div>
+                    <p className="text-sm font-semibold text-gray-800">
+                      {tx.type === "Income" ? tx.source : tx.category}
+                    </p>
+                    <p className="text-xs text-gray-500">
+                      {new Date(tx.date).toLocaleDateString("en-GB", {
+                        year: "numeric",
+                        month: "short",
+                        day: "numeric",
+                      })}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Amount */}
+                <p
+                  className={`text-sm font-bold ${tx.type === "Income" ? "text-green-600" : "text-red-600"}`}
+                >
+                  {tx.type === "Income" ? "+" : "-"} NPR {Number(tx.amount).toFixed(2)}
+                </p>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p className="text-center text-gray-500 py-4">No recent transactions found.</p>
+        )}
+      </div>
+      {/* --- End of Updated Recent Transactions Section --- */}
+
       <div className="bg-white p-6 rounded-xl shadow-md">
         <h3 className="text-2xl font-semibold mb-6 text-center">Income & Expense Trends</h3>
         {lineChartData.length > 0 ? (
@@ -238,54 +323,6 @@ const Dashboard = () => {
             <p className="text-center text-gray-500">No expense data available</p>
           )}
         </div>
-      </div>
-
-      {/* Recent Transactions Table */}
-      <div className="bg-white p-6 rounded-xl shadow-md">
-        <h3 className="text-2xl font-semibold mb-6 text-center">Recent Transactions</h3>
-        {recentTransactions.length > 0 ? (
-          <div className="overflow-x-auto">
-            <table className="min-w-full table-auto border-collapse border border-gray-200">
-              <thead>
-                <tr className="bg-gray-100">
-                  <th className="border border-gray-300 px-4 py-2 text-left">Type</th>
-                  <th className="border border-gray-300 px-4 py-2 text-left">Source / Category</th>
-                  <th className="border border-gray-300 px-4 py-2 text-right">Amount (NPR)</th>
-                  <th className="border border-gray-300 px-4 py-2 text-left">Date</th>
-                </tr>
-              </thead>
-              <tbody>
-                {recentTransactions.map((tx) => (
-                  <tr
-                    key={tx._id}
-                    className={`${
-                      tx.type === "Income" ? "bg-green-50" : "bg-red-50"
-                    } hover:bg-gray-100 transition`}
-                  >
-                    <td className="border border-gray-300 px-4 py-2 font-semibold">
-                      {tx.type}
-                    </td>
-                    <td className="border border-gray-300 px-4 py-2">
-                      {tx.type === "Income" ? tx.source : tx.category}
-                    </td>
-                    <td
-                      className={`border border-gray-300 px-4 py-2 text-right font-bold ${
-                        tx.type === "Income" ? "text-green-700" : "text-red-700"
-                      }`}
-                    >
-                      {tx.amount.toFixed(2)}
-                    </td>
-                    <td className="border border-gray-300 px-4 py-2">
-                      {new Date(tx.date).toLocaleDateString()}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        ) : (
-          <p className="text-center text-gray-500">No recent transactions found.</p>
-        )}
       </div>
     </div>
   );

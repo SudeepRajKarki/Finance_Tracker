@@ -18,7 +18,7 @@ app.use('/api/expense',expenseroutes);
 
 
 connectdb().then(()=>{
-   app.listen(PORT , () =>{
+   app.listen(PORT ,'0.0.0.0', () =>{
    console.log("server running in Port 5002");
 });
 

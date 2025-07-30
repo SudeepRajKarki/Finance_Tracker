@@ -88,7 +88,8 @@ const IncomePage = () => {
         <p className="text-gray-500 font-semibold text-xs">No income record yet.</p>
         ) : (
       <ul className="space-y-2">
-        {incomes.map((income) => (
+        {incomes.sort((a, b) => new Date(b.date) - new Date(a.date)) // latest date first
+          .map((income)  => (
           <li
             key={income._id}
             className="p-3 bg-gray-100 rounded shadow flex justify-between items-center"

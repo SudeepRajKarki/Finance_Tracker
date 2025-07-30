@@ -87,7 +87,7 @@ const ExpensePage = () => {
         <p className="text-gray-500 font-semibold text-xs">No expense record yet.</p>
         ) : (
         <ul className="space-y-2">
-        {expenses.map((expense) => (
+        {expenses.sort((a, b) => new Date(b.date) - new Date(a.date)).map((expense) => (
         <li
         key={expense._id}
         className="p-3 bg-gray-100 rounded shadow flex justify-between items-center"
