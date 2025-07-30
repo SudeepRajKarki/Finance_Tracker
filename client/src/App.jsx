@@ -7,7 +7,7 @@ import Footer from "./components/Footer"
 import Dashboard from "./pages/Dashboard";
 import PrivateRoute from "./components/PrivateRoute";
 import { useState,useEffect } from "react";
-import { BrowserRouter as Router,Routes,Route, BrowserRouter } from "react-router-dom";
+import { BrowserRouter as Router,Routes,Route, BrowserRouter, useNavigate} from "react-router-dom";
 import Income from "./pages/Income";
 import Expense from "./pages/Expense";
 
@@ -46,7 +46,7 @@ function App() {
         <Route path="/login" element={ user ? <Navigate to="/dashboard" replace /> : <Login />}/>
         <Route path="/register" element={ user ? <Navigate to="/dashboard" replace /> : <Register />}/>
         <Route path="*" element={user ? <Navigate to="/dashboard" replace /> : <Navigate to="/" replace /> }/>
-        
+
       </Routes>
       </main>
       </BrowserRouter>
