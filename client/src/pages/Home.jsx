@@ -96,11 +96,11 @@ const HomePage = () => {
           Monitor income, manage expenses, and visualize your financial health all in one sleek dashboard.
         </p>
         <div className="space-x-4">
-          <link to="/register"
+          <Link to="/register"
             className="inline-block bg-indigo-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-indigo-700 transition"
           >
             Get Started
-          </link>
+          </Link>
         </div>
       </div>
 
