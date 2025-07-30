@@ -11,10 +11,13 @@ const app=express();
 const PORT=(process.env.PORT);
 app.use(cors());
 app.use(express.json());
+console.log("JWT_SECRET from env:", process.env.JWT_SECRET);
+
 app.use('/api/auth', authroutes);
 app.use('/api/income',incomeroutes);
 
 app.use('/api/expense',expenseroutes);
+
 
 
 connectdb().then(()=>{
