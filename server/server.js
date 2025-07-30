@@ -15,10 +15,7 @@ console.log("JWT_SECRET from env:", process.env.JWT_SECRET);
 
 app.use('/api/auth', authroutes);
 app.use('/api/income',incomeroutes);
-
 app.use('/api/expense',expenseroutes);
-
-
 
 connectdb().then(()=>{
    app.listen(PORT ,'0.0.0.0', () =>{

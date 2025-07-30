@@ -43,9 +43,10 @@ function App() {
           </PrivateRoute>
          }/>
         <Route path="/" element={user ?<Dashboard/> :<Home/>}/>
-        <Route path="/register" element={<Register/>}/>
-        <Route path="/login"  element={<Login/>}/>
-
+        <Route path="/login" element={ user ? <Navigate to="/dashboard" replace /> : <Login />}/>
+        <Route path="/register" element={ user ? <Navigate to="/dashboard" replace /> : <Register />}/>
+        <Route path="*" element={user ? <Navigate to="/dashboard" replace /> : <Navigate to="/" replace /> }/>
+        
       </Routes>
       </main>
       </BrowserRouter>

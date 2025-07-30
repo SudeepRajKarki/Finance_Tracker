@@ -1,23 +1,10 @@
 import React, { useEffect, useState } from "react";
-import {
-  XAxis,
-  YAxis,
-  Tooltip,
-  ResponsiveContainer,
-  Legend,
-  CartesianGrid,
-  PieChart,
-  Pie,
-  Cell,
-  LineChart,
-  Line,
-} from "recharts";
+import {XAxis,YAxis,Tooltip,ResponsiveContainer,Legend,CartesianGrid,PieChart,Pie,Cell,LineChart,Line,} from "recharts";
 import { fetchIncome } from "../services/Incomeservice";
 import { fetchExpense } from '../services/Expenseservice';
-// --- Import React Icons ---
 import { FaShoppingCart, FaPlane, FaUtensils, FaMoneyBillWave, FaEllipsisH } from "react-icons/fa";
 import { GiReceiveMoney } from "react-icons/gi";
-import { MdArrowDropDown, MdArrowDropUp } from "react-icons/md"; // Import Up Arrow Icon
+import { MdArrowDropDown, MdArrowDropUp } from "react-icons/md"; 
 
 const COLORS = [
   "#0088FE",
@@ -29,14 +16,11 @@ const COLORS = [
   "#82ca9d",
   "#8884d8",
 ];
-
-// --- Icon Mapping ---
 const getTransactionIcon = (type, sourceOrCategory) => {
   if (type === "Income") {
     return <GiReceiveMoney className="text-green-500 text-xl" />;
   }
 
-  // Map common expense categories to icons
   switch (sourceOrCategory?.toLowerCase()) {
     case "shopping":
       return <FaShoppingCart className="text-purple-500 text-xl" />;
@@ -45,7 +29,7 @@ const getTransactionIcon = (type, sourceOrCategory) => {
     case "food":
       return <FaUtensils className="text-red-500 text-xl" />;
     default:
-      return <FaEllipsisH className="text-gray-500 text-xl" />; // Default icon
+      return <FaEllipsisH className="text-gray-500 text-xl" />; 
   }
 };
 
@@ -53,10 +37,8 @@ const Dashboard = () => {
   const [income, setIncome] = useState([]);
   const [expenses, setExpenses] = useState([]);
   const [loading, setLoading] = useState(true);
-  // State to control the number of transactions displayed
   const [showAllTransactions, setShowAllTransactions] = useState(false);
 
-  // Fetch income and expenses once on mount
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -74,12 +56,10 @@ const Dashboard = () => {
     fetchData();
   }, []);
 
-  // Calculate total income, expenses, balance
   const totalIncome = income.reduce((acc, i) => acc + i.amount, 0);
   const totalExpenses = expenses.reduce((acc, e) => acc + e.amount, 0);
   const balance = totalIncome - totalExpenses;
 
-  // Group income by source for pie chart
   const incomeBySource = income.reduce((acc, i) => {
     acc[i.source] = (acc[i.source] || 0) + i.amount;
     return acc;
@@ -89,7 +69,6 @@ const Dashboard = () => {
     value,
   }));
 
-  // Group expenses by category for pie chart
   const expenseByCategory = expenses.reduce((acc, e) => {
     acc[e.category] = (acc[e.category] || 0) + e.amount;
     return acc;
@@ -99,7 +78,6 @@ const Dashboard = () => {
     value,
   }));
 
-  // Prepare data for line chart: aggregate by date (yyyy-mm-dd)
   const parseDate = (d) => new Date(d).toISOString().split("T")[0];
   const aggregateByDate = (arr) => {
     const map = {};
@@ -112,29 +90,25 @@ const Dashboard = () => {
   const incomeByDate = aggregateByDate(income);
   const expensesByDate = aggregateByDate(expenses);
 
-  // Get all unique dates from both income and expenses
   const allDates = Array.from(
     new Set([...Object.keys(incomeByDate), ...Object.keys(expensesByDate)])
   ).sort();
 
-  // Build combined line chart data array
   const lineChartData = allDates.map((date) => ({
     date,
     Income: incomeByDate[date] || 0,
     Expense: expensesByDate[date] || 0,
   }));
 
-  // Recent transactions: merge ALL income and expenses, sort by date desc
   const allRecentTransactions = [
     ...income.map((i) => ({ ...i, type: "Income" })),
     ...expenses.map((e) => ({ ...e, type: "Expense" })),
   ]
     .sort((a, b) => new Date(b.date) - new Date(a.date));
 
-  // Determine which transactions to display based on the toggle state
   const displayedTransactions = showAllTransactions
     ? allRecentTransactions
-    : allRecentTransactions.slice(0, 5); // Show top 5 by default
+    : allRecentTransactions.slice(0, 5);
 
   if (loading) return <p className="text-center mt-20">Loading data...</p>;
 
@@ -164,11 +138,9 @@ const Dashboard = () => {
         </div>
       </div>
 
-      {/* --- Updated Recent Transactions Section with Toggle --- */}
       <div className="bg-white p-6 rounded-2xl shadow-lg">
         <div className="flex justify-between items-center mb-6">
           <h3 className="text-2xl font-bold text-gray-800">Recent Transactions</h3>
-          {/* Toggle Button */}
           <button
             onClick={() => setShowAllTransactions(!showAllTransactions)}
             className="text-sm font-medium text-blue-500 hover:underline flex items-center"
@@ -197,7 +169,6 @@ const Dashboard = () => {
                   <div className="flex-shrink-0 w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center">
                     {getTransactionIcon(tx.type, tx.type === "Income" ? tx.source : tx.category)}
                   </div>
-                  {/* Transaction Details */}
                   <div>
                     <p className="text-sm font-semibold text-gray-800">
                       {tx.type === "Income" ? tx.source : tx.category}
@@ -211,8 +182,6 @@ const Dashboard = () => {
                     </p>
                   </div>
                 </div>
-
-                {/* Amount */}
                 <p
                   className={`text-sm font-bold ${tx.type === "Income" ? "text-green-600" : "text-red-600"}`}
                 >
@@ -225,7 +194,6 @@ const Dashboard = () => {
           <p className="text-center text-gray-500 py-4">No recent transactions found.</p>
         )}
       </div>
-      {/* --- End of Updated Recent Transactions Section --- */}
 
       <div className="bg-white p-6 rounded-xl shadow-md">
         <h3 className="text-2xl font-semibold mb-6 text-center">Income & Expense Trends</h3>
@@ -261,8 +229,6 @@ const Dashboard = () => {
           <p className="text-center text-gray-500">No data available for trend chart.</p>
         )}
       </div>
-
-      {/* Pie Charts */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
         {/* Income Pie */}
         <div className="bg-white p-6 rounded-xl shadow-md">
@@ -293,8 +259,6 @@ const Dashboard = () => {
             <p className="text-center text-gray-500">No income data available</p>
           )}
         </div>
-
-        {/* Expense Pie */}
         <div className="bg-white p-6 rounded-xl shadow-md">
           <h3 className="text-xl font-semibold mb-4 text-center">Expenses by Category</h3>
           {expensePieData.length > 0 ? (

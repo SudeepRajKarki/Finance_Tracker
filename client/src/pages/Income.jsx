@@ -13,7 +13,7 @@ const IncomePage = () => {
       const data = await fetchIncome();
       setIncomes(data);
     } catch (err) {
-      console.error("❌ Failed to load incomes", err);
+      console.error("Failed to load incomes", err);
     }
   };
 
@@ -33,7 +33,7 @@ const IncomePage = () => {
       setDate("");
       loadIncomes(); // Refresh the list
     } catch (err) {
-      console.error("❌ Failed to add income", err);
+      console.error("Failed to add income", err);
     }
   };
 
@@ -43,7 +43,7 @@ const IncomePage = () => {
         await deleteIncome(id);
         loadIncomes(); // Refresh the list
       } catch (err) {
-        console.error("❌ Failed to delete income", err);
+        console.error(" Failed to delete income", err);
       }
     }
   };

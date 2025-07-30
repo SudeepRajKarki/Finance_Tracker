@@ -15,7 +15,7 @@ API.interceptors.request.use((config) => {
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   } else {
-    console.warn('❌ Token not found');
+    console.warn('Token not found');
   }
 
   return config;
