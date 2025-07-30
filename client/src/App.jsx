@@ -7,7 +7,7 @@ import Footer from "./components/Footer"
 import Dashboard from "./pages/Dashboard";
 import PrivateRoute from "./components/PrivateRoute";
 import { useState,useEffect } from "react";
-import { BrowserRouter as Router,Routes,Route, BrowserRouter, useNavigate} from "react-router-dom";
+import { BrowserRouter as Router,Routes,Route, BrowserRouter, Navigate} from "react-router-dom";
 import Income from "./pages/Income";
 import Expense from "./pages/Expense";
 
